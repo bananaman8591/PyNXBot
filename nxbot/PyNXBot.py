@@ -406,6 +406,12 @@ class BDSPBot(NXBot):
         boxPointer = f"[[[[[[[[[main+{self.playerPrefsProvider:X}]+18]+C0]+28]+B8]]+A0]+{0x20+(0x08*(box-1)):X}]+{0x20+(0x08*(slot-1)):X}]+20"
         return self.read_pointer(boxPointer,self.PK8STOREDSIZE)
 
+    def readDayCare(self,slot=1):
+        if slot > 2:
+            slot = 2
+        dayCarePointer = f"[[[[[[[[main+{self.playerPrefsProvider:X}]+18]+C0]+28]+B8]]+450]+{0x20+(0x08*(slot-1)):X}]+20"
+        return self.read_pointer(dayCarePointer,self.PK8STOREDSIZE)
+
     def readWild(self):
         roamerPointer = f"[[[[[[[[[[[[[main+{self.playerPrefsProvider:X}]+18]+C0]+28]+B8]]+7E8]+58]+28]+10]+20]+20]+18]+20"
         return self.read_pointer(roamerPointer,self.PK8STOREDSIZE)
