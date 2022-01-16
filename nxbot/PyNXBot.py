@@ -334,28 +334,34 @@ class BDSPBot(NXBot):
     POINTERS = {
         0x0100000011D90000: { # Brilliant Diamond
             0xD9E96FB92878E345: { # 1.1.1
+                'FieldManager': 0x4C13650,
                 'PlayerPrefsProvider': 0x4C49098,
                 'MainRng': 0x4F8CCD0
             },
             0x1B5215DF918BA04B: { # 1.1.2
+                'FieldManager': 0x4E2A728,
                 'PlayerPrefsProvider': 0x4E60170,
                 'MainRng': 0x4F8CCD0
             },
             0xBC259F7EE8E79A49: { # 1.1.3
+                'FieldManager': 0x4E4F730,
                 'PlayerPrefsProvider': 0x4E853F0,
                 'MainRng': 0x4FB2050
             }
         },
         0x010018E011D92000: { # Shining Pearl
             0x3C70CAE153DF0B4F: { # 1.1.1
+                'FieldManager': 0x4E2A728,
                 'PlayerPrefsProvider': 0x4E60170,
                 'MainRng': 0x4F8CCD0
             },
             0x5D3A3B56321FFD4C: { # 1.1.2
+                'FieldManager': 0x4E2A728,
                 'PlayerPrefsProvider': 0x4E60170,
                 'MainRng': 0x4F8CCD0
             },
             0x046D130F0873314A: { # 1.1.3
+                'FieldManager': 0x4E4F730,
                 'PlayerPrefsProvider': 0x4E853F0,
                 'MainRng': 0x4FB2050
             }
@@ -376,6 +382,7 @@ class BDSPBot(NXBot):
             print(f"Unsupported build: {self.buildID:016X}")
             self.close()
         print(f"Title: {self.titleID:016X}    Build: {self.buildID:016X}")
+        self.fieldManager = self.POINTERS[self.titleID][self.buildID]['FieldManager']
         self.playerPrefsProvider = self.POINTERS[self.titleID][self.buildID]['PlayerPrefsProvider']
         self.mainRng = self.POINTERS[self.titleID][self.buildID]['MainRng']
         from structure import MyStatusBDSP
@@ -415,6 +422,14 @@ class BDSPBot(NXBot):
     def readWild(self):
         roamerPointer = f"[[[[[[[[[[[[[main+{self.playerPrefsProvider:X}]+18]+C0]+28]+B8]]+7E8]+58]+28]+10]+20]+20]+18]+20"
         return self.read_pointer(roamerPointer,self.PK8STOREDSIZE)
+
+    def readUndergroundSlots(self):
+        undergroundSlotsPointer = f"[[[[[[[[[main+{self.fieldManager:X}]+B8]]+A8]+10]+18"
+        return self.read_pointer(undergroundSlotsPointer, 1)
+
+    def readUnderground(self,slot=1):
+        undergroundPointer = f"[[[[[[[[[main+{self.fieldManager:X}]+B8]]+A8]+10]+10]+{0x20+(0x08*(slot-1)):X}]+10]+10]+20"
+        return self.read_pointer(undergroundPointer, self.PK8STOREDSIZE)
 
     def readRoamerBlock(self):
         roamerPointer = f"[[[[[[[main+{self.playerPrefsProvider:X}]+18]+C0]+28]+B8]]+2A0]+20"
